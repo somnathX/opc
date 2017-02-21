@@ -47,18 +47,21 @@
 			//echo $result;
 		}
 		//print_r ($result);
-		//return $result;
+		return $result;
 	}
 
 	function checkOutput($result)
 	{
-		if(strcmp($result['status']['id'],"3"))
+		if($result['status']['id'] == 3)
 			return $result['stdout'];
+		else
+			return "Compilation error";
 	}
 
 	$POST = file_get_contents('php://input');
 	$token = getToken($POST);
 	//echo $token;
 	$status = checkStatus($token);
-	
+	$output = checkOutput($status);
+	echo $output;
 ?>
