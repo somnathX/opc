@@ -27,27 +27,7 @@
 
 	function checkStatus($token)
 	{
-		$url = "https://api.judge0.com/submissions/" . $token;
-		//print_r ($url);
-		$options = array(
-  			'http' => array(
-    		'header'  => array(
-				'Accept : application/json',
-				),
-    		'method'  => 'GET',
-  			),
-		);
-		$context  = stream_context_create($options);
-		$result = file_get_contents($url, false, $context);
-		$result = json_decode($result,true);
-		if($result['status']['id'] <= 2)
-		{
-			$result = checkStatus($token);
-			//$result = json_decode($result,true);
-			//echo $result;
-		}
-		//print_r ($result);
-		return $result;
+		
 	}
 
 	function checkOutput($result)
