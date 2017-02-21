@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Compile{
 		private $token;
@@ -35,7 +35,7 @@
 			//else return error in code
 		}
 
-		
+
 	}
 	
->
+?>
