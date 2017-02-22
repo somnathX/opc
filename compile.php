@@ -3,15 +3,17 @@
 	class Compile{
 		private $token;
 		private $error; //(boolean)
+		private $expectedOutput;
 		private $errorType;
 		private $input;
 		private $output;
 		private $languageId;
 		private $sourceCode;
+		private $result; //array of result
 		const URL = "https://api.judge0.com/submissions/";
 
-		function __construct($sourceCode,$languageId,$input,$output,$token,$error,
-			$errorType) {
+		function __construct($sourceCode,$languageId,$input,$output,$expectedOutput,
+			$token,$error,$errorType ) {
    			$this->sourceCode = $sourceCode; //from input
    			$this->languageId = $languageId; //from input
    			$this->input = $input;//from input
@@ -19,6 +21,7 @@
    			$this->token = $token;
    			$this->error = $error;
    			$this->errorType = $errorType;
+   			$this->expectedOutput = $expectedOutput;
 		}
 
 		function getToken(){
@@ -78,11 +81,29 @@
 			$this->errorType = $errorType;
 		}
 
+		function setExpectedOutput($expectedOutput){
+			$this->expectedOutput = $expectedOutput;
+		}
+
+		function getExpectedOutput(){
+			return $this->expectedOutput ;
+		}
+
+		function setResult($result){
+			$this->result = $result;
+		}
+
+		function getResult(){
+			return $this->result;
+		}
+
 
 		function createToken()
 		{
 			$data = Array("source_code"=>$this->sourceCode,
 				"language_id"=>$this->languageId,"input"=>$this->input);
+			if(strlen($this->expectedOutput))
+				$data['expected_output'] = $this->expectedOutput;
 			//print_r($data);
 			$data = json_encode($data);
 			$options = array(
@@ -110,7 +131,7 @@
 			}
 		}
 
-		function checkStatus()
+		function createStatus()
 		{
 			if($this->getError()==true)
 			{
@@ -130,31 +151,39 @@
   					),
 				);
 				$context  = stream_context_create($options);
-				$result = file_get_contents($newurl, false, $context);
-				$result = json_decode($result,true);
-				if($result['status']['id'] <= 2)
+				$response = file_get_contents($newurl, false, $context);
+				$response = json_decode($response,true);
+				if($response['status']['id'] <= 2)
 				{
-					$this->checkStatus();
-				}
-				else if($result['status']['id'] == 3)
-				{
- 					$this->setOutput($result['stdout']);
+					$this->createStatus();
 				}
 				else
 				{
-					$this->setError(true);
-					$this->setErrorType($result['status']['description']);
+					$this->setResult($response);
 				}
 			}
 		}
 
-		function checkError()
+		function createResult()
 		{
-			//require status of code
-			//if no error put result to true and return output
-			//else return error in code
+			$response = $this->getResult();
+			if($response['status']['id'] == 3)
+			{
+				$this->setError(false);
+				$this->setOutput($response['stdout']);
+			}
+			else if($response['status']['id'] == 4)
+			{
+				$this->setError(true);
+				$this->setOutput($response['stdout']);
+				$this->setErrorType($response['status']['description']);
+			}
+			else
+			{
+				$this->setError(true);
+				$this->setErrorType($response['status']['description']);
+			}
 		}
-
 
 	}
 ?>
