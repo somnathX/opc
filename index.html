@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js">
+	</script>
+	<link rel="stylesheet" 
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+</head>
+<body>
+
+	<div class="container">
+		<div class="row" >
+			<div class="col-md-12 col-lg-12">
+				<form>
+  					<div class="form-group">
+    					<div>
+    						<br/>
+    						<label>Select Language</label>
+      						<select class="form-control" id="selectLanguage">
+        						<option value="1">Bash (4.4)</option>
+        						<option value="2">Bash (4.0))</option>
+        						<option value="3">C (gcc 6.3.0)</option>
+        						<option value="4">C (gcc 5.4.0)</option>
+        						<option value="5">C (gcc 4.9.4)</option>
+        						<option value="6">C (gcc 4.8.5)</option>
+        						<option value="7">C++ (g++ 6.3.0)</option>
+        						<option value="8">C++ (g++ 5.4.0)</option>
+        						<option value="9">C++ (g++ 4.9.4)</option>
+        						<option value="10">C++ (g++ 4.8.5)</option>
+        						<option value="11">C# (mono 4.8.0.472)</option>
+        						<option value="12">Haskell (ghc 8.0.2)</option>
+        						<option value="13">Java (OpenJDK 8)</option>
+        						<option value="14">Java (OpenJDK 7)</option>
+        						<option value="15">Octave (4.2.0)</option>
+        						<option value="16">Pascal (fpc 3.0.0)</option>
+        						<option value="17">Python (3.6.0)</option>
+        						<option value="18">Python (3.5.3)</option>
+        						<option value="19">Python (2.7.9)</option>
+        						<option value="20">Python (2.6.9)</option>
+        						<option value="21">Ruby (2.4.0)</option>
+        						<option value="22">Ruby (2.3.3)</option>
+        						<option value="23">Ruby (2.2.6)</option>
+        						<option value="24">Ruby (2.1.9)"</option>
+      						</select>
+      						<br/>
+    					</div>
+    					<div>
+    						<label>Source Code</label>
+  							<textarea id="sourceCode" 
+  							class="form-control" rows="16" id="comment"></textarea>
+  							<br/>
+    					</div>
+    					<div class="pull-left">
+    						<label >Inputs</label>
+  							<textarea class="form-control" rows="5"
+  							 id="input"></textarea>
+    					</div>
+    					<div class="pull-left" style="margin-left: 20px" 
+    					id="outputDiv">
+    						<label >Output</label>
+  							<textarea class="form-control" rows="5"
+  							 id="output"></textarea>
+    					</div>
+    					<div id="statusDiv" class="pull-left" style="margin-left: 10px"> 
+    						<label>Status</label>
+							<div class="jumbotron " style="padding:5px;padding-left:10px ; padding-right:10px ; 
+    							margin-left: 0px; margin-top: 10px" id="status">
+  						    </div>
+    					</div>
+  					</div>
+	  				<div class="pull-right">
+						<button type="button" class="btn btn-default"
+						 onclick="getValue()">Submit</button>
+	  				</div>
+				</form>
+
+			</div>
+		</div>	
+	</div>
+
+		<script type="text/javascript">
+		$(function(){
+    		$("#outputDiv").hide();
+    	    $("#statusDiv").hide();
+
+		});
+		function getValue(e)
+		{
+			//e.preventDefault();
+			$("#outputDiv").hide();
+    	    $("#statusDiv").hide();
+
+		 console.log();
+			var BASE_URL = "http://localhost/opc/output.php";
+			var code =  $('#sourceCode').val();
+			var input  = $("#input").val();
+			//var expected_output = $(".expectedOutput").val();
+			var languageId = $('#selectLanguage').val();
+			var data = {
+    			source_code: code,
+    			language_id: languageId,
+    			input: input,
+    			//expected_output : expected_output,
+  			};
+  			console.log(data);
+			//console.log(put);
+			console.log("Hello World");
+			$.ajax({
+    			url: BASE_URL,
+    			type: "POST",
+    			async: true,
+    			contentType: "application/json",
+    			data: JSON.stringify(data),
+    			success: function(data) {
+      			        console.log(data);
+    					var obj = JSON.parse(data);
+    					//$("#outputDiv").show();
+    					if(obj['error'].length != 0)
+    					{
+    					  $("#statusDiv").show();
+    					  document.getElementById('status').innerHTML = obj['error'];
+    					  return ;
+    					}
+    					if(obj['output'].length != 0)
+    					{
+    						$("#outputDiv").show();
+    					 document.getElementById('output').innerHTML = obj['output'];
+    					  $("#statusDiv").show();
+    					  document.getElementById('status').innerHTML = 'Accepted';
+    					}
+    					
+    			},
+    			error: function(){
+    				console.log("Erroe");
+    			}
+  			});
+   	}
+	</script>
+	
+</body>
+</html>

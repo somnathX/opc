@@ -26,13 +26,13 @@
 	$output = null;
 	$token = null;
 	$error = false;
-	$errorType = null;
+	$errorType = "";
 	$comp = new Compile($source_code, $language_id, $input ,$output ,$expected_output,$token ,$error, $errorType);
 	$comp->createToken();
 	$send=array();
 	if($comp->getError()==true)
 	{
-		$send = array("error"=>$comp->getErrorType());
+		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput());
 		echo json_encode($send);
 		return;
 	}
@@ -52,7 +52,7 @@
 	}
 	else
 	{
-		$send = array("output"=>$comp->getOutput());
+		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput());
 		echo json_encode($send);
 		return ;
 	}
