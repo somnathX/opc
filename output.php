@@ -27,16 +27,24 @@
 	$comp = new Compile($source_code, $language_id, $input ,$output , $token ,
 		$error, $errorType);
 	$comp->createToken();
+	$send=array();
 	if($comp->getError()==true)
 	{
-		return $comp->getErrorType();
+		$send = array("error"=>$comp->getErrorType());
+		echo json_encode($send);
+		return;
 	}
 	$comp->checkStatus();
 	if($comp->getError()==true)
 	{
-		echo $comp->getErrorType();
-		return $comp->getErrorType();
+		$send = array("error"=>$comp->getErrorType());
+		echo json_encode($send);
+		return ;
 	}
 	else
-		return $comp->getOutput();
+	{
+		$send = array("output"=>$comp->getOutput());
+		echo json_encode($send);
+		return ;
+	}
 ?>
