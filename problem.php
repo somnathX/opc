@@ -1,124 +1,62 @@
 <?php
-	
-	class Problem{
-		private $pid;
-		private $pname;
-		private $statement;
-		private $error; //boolean
-		private $errorType;
-		private $con;
-		const SERVER = "localhost";
-		const USER = "root";
-		const PASS = "";
-		const DB = "njrcode";
-
-		function __construct()
+	include("languages.php");
+	$pid = $_GET['pid'];
+	$server = "localhost";
+	$user = "root";
+	$pass = "";
+	$db = "njrcode";
+	$conn = mysqli_connect($server , $user ,$pass , $db);
+	$response = array("error"=>false , "errorType"=>"");
+	if (!$conn) {
+    	$response["errorType"] = "database no connected";
+    	$response["error"] = true;
+	} 
+	else
+	{
+		$query = "SELECT * FROM `problems` WHERE pid = " . $pid ;
+		$result = mysqli_query($conn, $query);
+		if (mysqli_num_rows($result) > 0) {
+   			 $row = mysqli_fetch_assoc($result);
+   			 $response["code"] = $row["code"];
+   			 $response["name"] = $row["name"];
+   			 $response["type"] = $row["type"];
+   			 $response["contest"] = $row["contest"];
+   			 $response["status"] = $row["status"];
+   			 $response["pgroup"] = $row["pgroup"];
+   			 $response["statement"] = $row["statement"];
+   			 $response["input"] = $row["input"];
+   			 $response["output"] = $row["output"];
+   			 $response["timelimit"] = $row["timelimit"];
+   			 $resonse["score"] = $row["score"];
+   			 $str = "";
+   			 $len = strlen($row["languages"]);
+   			 for($i = 0 ; $i < $len ; $i++)
+   			 {
+   			 	$ch = substr($row["languages"], $i, 1);
+   				if(is_numeric($ch))
+   				{
+   					if($i < $len-1 && is_numeric(substr($row["languages"], $i+1, 1)))
+   					{
+   						$ch = $ch. substr($row["languages"], $i+1, 1);
+   						$i+=1;
+   					}
+   					$str = $str . $languages[$ch] .' , ';
+   				}
+   			 }
+   			 $response["languages"] = $str;
+   			 $response["options"] = $row["options"];
+   			 $response["displayio"] = $row["displayio"];
+   			 $response["maxfilesize"] = $row["maxfilesize"];
+   			 $response["solved"] = $row["solved"];
+   			 $response["total"] = $row["total"];
+		} 	
+		else
 		{
-			$pid = "";
-			$pname = "";
-			$statement = "";
-		}
-
-		function getPid()
-		{
-			return $this->pid;
-		}
-
-		function setPid($pid)
-		{
-			$this->pid = $pid;
-		}
-
-		function getName()
-		{
-			return $this->pname;
-		}
-
-		function setName($pname)
-		{
-			$this->pname = $pname;
-		}
-
-		function getStatement()
-		{
-			return $this->statement;
-		}
-
-		function setStatement($statement)
-		{
-			$this->statement = $statement;
-		}
-
-
-		function getError()
-		{
-			return $this->error;
-		}
-
-		function setError($error)
-		{
-			$this->error = $error;
-		}
-
-		function getErrorType()
-		{
-			return $this->errorType;
-		}
-
-		function setErrorType($errorType)
-		{
-			$this->errorType = $errorType;
-		}
-
-		function getConnection()
-		{
-			return $this->conn;
-		}
-
-		function setConnection($conn)
-		{
-			$this->conn = $conn;
-		}
-
-		function createConnection()
-		{
-			$conn = mysqli_connect(self::SERVER, self::USER, self::PASS,self::DB);
-			if (!$conn) {
-    			$this->setError("Not Connected Try Again");
-    			$this->setErrorType(true);
-			} 
-			else
-			{
-				//echo "Connected";
-				$this->setConnection($conn);
-			}
-		}
-
-		function createStatement()
-		{
-			$conn = $this->getConnection();
-			$query = "SELECT `statement` FROM `problems` WHERE pid = " .$this->pid ;
-			$result = mysqli_query($conn, $query);
-			if (mysqli_num_rows($result) > 0) {
-   			 	$row = mysqli_fetch_assoc($result);
-   			 	$data = $row["statement"];
-   			 	//echo $data;
-        		$this->setStatement($data);
-        		//echo $this->getStatement();
-			} 	
-			else
-			{
-				echo "In Statement";
-				$this->setErrorType(true);
-				$this->setError("Id Not Found");
-			}
-		}
-
-		function closeConnection()
-		{
-			$con = $this->getConnection();
-			mysqli_close($conn);
+			$response["errorType"] = "pid not present please sent true id";
+    		$response["error"] = true;
 		}
 
 	}
+	$response = json_encode($response);
+	echo $response;
 ?>
