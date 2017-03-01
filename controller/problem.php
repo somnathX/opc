@@ -40,7 +40,7 @@
    						$ch = $ch. substr($row["languages"], $i+1, 1);
    						$i+=1;
    					}
-   					$str = $str . getLanguage($ch) .' , ';
+   					$str = $str . $languages[$ch] .' , ';
    				}
    			 }
    			 $response["languages"] = $str;

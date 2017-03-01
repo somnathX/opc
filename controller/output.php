@@ -7,14 +7,16 @@
 		$source_code = $POST['source_code'];
 	else
 	{
-		echo "source_code not exist";
-		return ;
+		$send =  array("error"=>"source_code not exist");
+		echo json_encode($send);
+		return;
 	}
 	if(isset($POST['language_id']))
 		$language_id = $POST['language_id'];
 	else
 	{
-		echo "Language ID not exist";
+		$send =  array("error"=>"language_id not exist");
+		echo json_encode($send);
 		return ;
 	}
 	$input = "";
@@ -52,7 +54,8 @@
 	}
 	else
 	{
-		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput());
+		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput(),
+			"token"=>$comp->getToken());
 		echo json_encode($send);
 		return ;
 	}
