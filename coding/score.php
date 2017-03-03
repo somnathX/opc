@@ -62,8 +62,28 @@
 		}
 	}
 
+	function postScore($POST , $score)
+	{
+		$conn = createConnection();
+		$query = "INSERT INTO `contest_users`(`cid`, `user_id`, `score`) VALUES (" 
+		. $POST['cid'] . "," .$POST['user_id'] . "," . $score . ")";
+		$result = mysqli_query($conn,$query);
+		$response = array("success"=>"0");
+		if(!$result)
+		{
+			return $response;
+		}
+		else
+		{
+			$response["success"] = 1;
+		}
+		return $response;
+	}
+
 	$POST = file_get_contents('php://input');
 	$POST = json_decode($POST,true);
 	$response = calculateScore($POST);
+	$score = $response["score"];
+	$response = postScore($POST,$score);
 	echo json_encode($response);
 ?>
