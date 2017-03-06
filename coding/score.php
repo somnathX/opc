@@ -7,21 +7,22 @@
 		$query = "SELECT `input`, `output` FROM `problems` WHERE pid = " . $POST['pid'];
 		$result = mysqli_query($conn , $query);
 		$response = array("score"=>'0');
-		if(!$result)
+		if(!$result || mysqli_num_rows($result)==0)
 		{
 			$response['score'] = 0;
-			return ;
+			$response['error'] = 'Wrong Problem ID';
+			return $response;
 		}
 		else
 		{
 			$row = mysqli_fetch_array($result,MYSQLI_NUM);
 			$input = $row[0];
 			$output = $row[1];
-			echo $input;
 			$source_code = $POST['source_code'];
 			$language_id = $POST['language_id'];
+			$time = $POST['time'];
 			$request = array("source_code"=>$source_code,"language_id"=>$language_id,
-				"input"=>$input,"expected_output"=>$output);
+				"input"=>$input,"expected_output"=>$output,"time"=>$time);
 			$request = json_encode($request);
 			//echo $request;
 			$options = array(
@@ -41,7 +42,7 @@
 			if(!$result)
 			{
 				$response["score"] = 0;
-
+				$response["error"] = "Sorry Connection Error";
 			}
 			else
 			{
@@ -49,41 +50,23 @@
 				$error = $result["error"];
 				if(!empty($error))
 				{
-					$response["error"] = "Wrong Answer";
-					$response["output"] = $result["output"];
+					$result["score"] = 0;
+					return $result;
 				}
 				else
 				{
-					$response["score"] = "20";
-					$response["output"] = $result["output"];
+					$result["score"] = "20";
+					return $result;
 				}
 			}
 			return $response;
 		}
 	}
 
-	function postScore($POST , $score)
-	{
-		$conn = createConnection();
-		$query = "INSERT INTO `contest_users`(`cid`, `user_id`, `score`) VALUES (" 
-		. $POST['cid'] . "," .$POST['user_id'] . "," . $score . ")";
-		$result = mysqli_query($conn,$query);
-		$response = array("success"=>"0");
-		if(!$result)
-		{
-			return $response;
-		}
-		else
-		{
-			$response["success"] = 1;
-		}
-		return $response;
-	}
-
 	$POST = file_get_contents('php://input');
 	$POST = json_decode($POST,true);
 	$response = calculateScore($POST);
 	$score = $response["score"];
-	$response = postScore($POST,$score);
+	//$save = postScore($POST,$score);
 	echo json_encode($response);
 ?>

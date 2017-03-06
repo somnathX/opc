@@ -25,37 +25,44 @@
 	$expected_output = "";
 	if(isset($POST['expected_output']))
 		$expected_output = $POST['expected_output'];
+	$time = 10;
+	if(isset($POST['time']))
+		$time= $POST['time'];
 	$output = null;
 	$token = null;
 	$error = false;
 	$errorType = "";
-	$comp = new Compile($source_code, $language_id, $input ,$output ,$expected_output,$token ,$error, $errorType);
+	$submission = 0;
+	$comp = new Compile($source_code, $language_id, $input ,$output ,$expected_output,$token ,$error, $errorType , $time , $submission);
 	$comp->createToken();
 	$send=array();
 	if($comp->getError()==true)
 	{
-		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput());
+		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput(),
+			"time"=>$comp->getTime() , "submission"=>$comp->getSubmission());
 		echo json_encode($send);
 		return;
 	}
 	$comp->createStatus();
 	if($comp->getError()==true)
 	{
-		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput());
+		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput(),
+				"time"=>$comp->getTime() ,"submission"=>$comp->getSubmission());
 		echo json_encode($send);
 		return ;
 	}
 	$comp->createResult();
 	if($comp->getError()==true)
 	{
-		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput());
+		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput(),
+				"time"=>$comp->getTime() ,"submission"=>$comp->getSubmission());
 		echo json_encode($send);
 		return ;
 	}
 	else
 	{
 		$send = array("error"=>$comp->getErrorType(),"output"=>$comp->getOutput(),
-			"token"=>$comp->getToken());
+			"time"=>$comp->getTime() ,"submission"=>$comp->getSubmission());
 		echo json_encode($send);
 		return ;
 	}
