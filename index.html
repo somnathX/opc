@@ -50,7 +50,7 @@
     					<div>
     						<label>Source Code</label>
   							<textarea id="sourceCode" 
-  							class="form-control" rows="16" id="comment"></textarea>
+  							class="form-control" rows="16" ></textarea>
   							<br/>
     					</div>
     					<div class="pull-left">
@@ -70,6 +70,12 @@
     							margin-left: 0px; margin-top: 10px" id="status">
   						    </div>
     					</div>
+                        <div id="scoreDiv" class="pull-left" style="margin-left: 10px"> 
+                            <label>Status</label>
+                            <div class="jumbotron " style="padding:5px;padding-left:10px ; padding-right:10px ; 
+                                margin-left: 0px; margin-top: 10px" id="score">
+                            </div>
+                        </div>
   					</div>
 	  				<div class="pull-right">
 						<button type="button" class="btn btn-default"
@@ -83,27 +89,30 @@
 
 		<script type="text/javascript">
 		$(function(){
-    		$("#outputDiv").hide();
-    	    $("#statusDiv").hide();
+    		//$("#outputDiv").hide();
+    	    //$("#statusDiv").hide();
 
 		});
 		function getValue(e)
 		{
 			//e.preventDefault();
-			$("#outputDiv").hide();
-    	    $("#statusDiv").hide();
+			//$("#outputDiv").hide();
+    	    //$("#statusDiv").hide();
 
-		 console.log();
-			var BASE_URL = "http://localhost/opc/controller/output.php";
+			var BASE_URL = "http://localhost/opc/coding/saverun.php";
 			var code =  $('#sourceCode').val();
 			var input  = $("#input").val();
-			//var expected_output = $(".expectedOutput").val();
+			var expected_output = $("#output").val();
 			var languageId = $('#selectLanguage').val();
 			var data = {
     			source_code: code,
     			language_id: languageId,
     			input: input,
-    			//expected_output : expected_output,
+    			expected_output : expected_output,
+                pid : 1,
+                user_id : 4,
+                cid : 1,
+                time : '0.2'
   			};
   			console.log(data);
 			//console.log(put);
@@ -130,6 +139,7 @@
     					 document.getElementById('output').innerHTML = obj['output'];
     					  $("#statusDiv").show();
     					  document.getElementById('status').innerHTML = 'Accepted';
+                          document.getElementById('score').innerHTML = obj['score'];
     					}
     					
     			},
