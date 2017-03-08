@@ -10,10 +10,12 @@
 		private $languageId;
 		private $sourceCode;
 		private $result; //array of result
+		private $time;
+		private $submission;
 		const URL = "https://api.judge0.com/submissions/";
 
 		function __construct($sourceCode,$languageId,$input,$output,$expectedOutput,
-			$token,$error,$errorType ) {
+			$token,$error,$errorType , $time , $submission) {
    			$this->sourceCode = $sourceCode; //from input
    			$this->languageId = $languageId; //from input
    			$this->input = $input;//from input
@@ -22,6 +24,8 @@
    			$this->error = $error;
    			$this->errorType = $errorType;
    			$this->expectedOutput = $expectedOutput;
+   			$this->time = $time;
+   			$this->submission = $submission;
 		}
 
 		function getToken(){
@@ -30,6 +34,25 @@
 
 		function setToken($token){
 			$this->token = $token;
+		}
+
+		function getSubmission(){
+			return $this->submission;
+		}
+
+		function setSubmission($submission)
+		{
+			$this->submission = $submission;
+		}
+
+		function getTime()
+		{
+			return $this->time;
+		}
+
+		function setTime($time)
+		{
+			$this->time = $time;
 		}
 
 		function getInput(){
@@ -104,6 +127,7 @@
 				"language_id"=>$this->languageId,"input"=>$this->input);
 			if(strlen($this->expectedOutput))
 				$data['expected_output'] = $this->expectedOutput;
+			$data['wall_time_limit'] = $this->time;
 			//print_r($data);
 			$data = json_encode($data);
 			$options = array(
@@ -171,17 +195,24 @@
 			{
 				$this->setError(false);
 				$this->setOutput($response['stdout']);
+				$this->setTime($response['wall_time_limit']);
+				$this->setSubmission($response['created_at']);
 			}
 			else if($response['status']['id'] == 4)
 			{
 				$this->setError(true);
 				$this->setOutput($response['stdout']);
 				$this->setErrorType($response['status']['description']);
+				$this->setTime($response['wall_time_limit']);
+				$this->setSubmission($response['created_at']);
 			}
 			else
 			{
 				$this->setError(true);
-				$this->setErrorType($response['status']['description']);
+				$this->setTime($response['wall_time_limit']);
+				$error = $response['status']['description'] . $response['stderr'];
+				$this->setErrorType($error);
+				$this->setSubmission($response['created_at']);
 			}
 		}
 
