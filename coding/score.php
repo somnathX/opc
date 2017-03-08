@@ -1,5 +1,5 @@
 <?php
-	include("C:/xampp/htdocs/opc/controller/connection.php");
+	include("../controller/connection.php");
 
 	function calculateScore($POST)
 	{

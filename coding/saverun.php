@@ -1,6 +1,6 @@
 <?php
-	include("C:/xampp/htdocs/opc/controller/connection.php");
-	include("C:/xampp/htdocs/opc/controller/languages.php");
+	include("../controller/connection.php");
+	include("../controller/languages.php");
 	
 	function submitRun($data,$result)
 	{
